@@ -27,6 +27,7 @@
 
     <!-- Lobby Screen -->
     <div id="lobby-screen" class="screen">
+      <button class="btn-back" onclick="goBack()">← Back</button>
       <h2 class="room-code" id="display-code">----</h2>
       <p class="waiting">Waiting for your partner...</p>
       <div class="code-share">
@@ -37,9 +38,9 @@
 
     <!-- Game Screen -->
     <div id="game-screen" class="screen">
+      <button class="btn-back" onclick="goBack()">← Back</button>
       <div class="round-indicator" id="round-indicator">
         <span class="round-name">Warm-Up</span>
-        <span class="question-num">1/20</span>
       </div>
       
       <div class="question-card">
@@ -63,6 +64,7 @@
 
     <!-- Game Over Screen -->
     <div id="end-screen" class="screen">
+      <button class="btn-back" onclick="goBack()">← Back</button>
       <h2>🎉 That's a Wrap! 🎉</h2>
       <p>You made it through all 20 questions!</p>
       <button onclick="restartGame()" class="btn primary">Play Again</button>

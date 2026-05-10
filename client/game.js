@@ -1,7 +1,7 @@
 // SPARK - Client Game Logic
 // Uses Socket.io client CDN
 
-const SERVER_URL = 'https://cold-animals-pay.loca.lt';
+const SERVER_URL = 'https://spark-game.onrender.com';
 
 let socket;
 let myRole = '';
@@ -78,15 +78,28 @@ function connectSocket() {
     document.getElementById('question-text').textContent = data.question;
     document.getElementById('round-indicator').innerHTML = `
       <span class="round-name">${data.round}</span>
-      <span class="question-num">${data.index + 1}/${data.total}</span>
     `;
     document.getElementById('roll-btn').classList.add('hidden');
     document.getElementById('next-btn').classList.remove('hidden');
   });
 
-  socket.on('turn_changed', ({ turn }) => {
+  socket.on('turn_changed', ({ turn, nextQuestion }) => {
     myTurn = (turn === myRole);
     updatePlayers();
+    // Reset for next player — clear question, show roll button
+    if (myTurn) {
+      document.getElementById('question-text').textContent = 'Your turn! Tap "Roll Question" to continue.';
+      document.getElementById('roll-btn').classList.remove('hidden');
+      document.getElementById('next-btn').classList.add('hidden');
+      document.getElementById('roll-btn').disabled = false;
+      document.getElementById('roll-btn').style.opacity = 1;
+    } else {
+      document.getElementById('question-text').textContent = "Waiting for partner's question...";
+      document.getElementById('roll-btn').classList.add('hidden');
+      document.getElementById('next-btn').classList.add('hidden');
+      document.getElementById('roll-btn').disabled = true;
+      document.getElementById('roll-btn').style.opacity = 0.5;
+    }
   });
 
   socket.on('game_over', () => {
@@ -113,6 +126,11 @@ function nextTurn() {
 }
 
 function restartGame() {
+  location.reload();
+}
+
+function goBack() {
+  if (socket) socket.disconnect();
   location.reload();
 }
 
