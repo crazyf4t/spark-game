@@ -43,7 +43,7 @@ async function joinRoom() {
   roomCode = document.getElementById('code-input').value.trim().toUpperCase();
 
   if (!myName) { showToast('Enter your name'); return; }
-  if (!roomCode || roomCode.length !== 4) { showToast('Enter a valid code'); return; }
+  if (!roomCode || roomCode.length !== 1) { showToast('Enter a valid code'); return; }
 
   try {
     const res = await fetch(`${SERVER_URL}/rooms/${roomCode}`);

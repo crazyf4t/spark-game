@@ -6,9 +6,7 @@ const rooms = new Map();
 
 function generateCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({ length: 4 }, () =>
-    chars[Math.floor(Math.random() * chars.length)]
-  ).join('');
+  return chars[Math.floor(Math.random() * chars.length)];
 }
 
 // POST /rooms → create a new room
