@@ -93,11 +93,18 @@ function connectSocket() {
 
   socket.on('game_over', () => {
     if (autoRollTimer) clearTimeout(autoRollTimer);
-    // Build verdict with player names
     const hostName = document.getElementById('host-name').textContent || 'You';
     const guestName = document.getElementById('guest-name').textContent || 'Partner';
-    const verdict = `${hostName} & ${guestName} — You two are going to be a great couple together! 💍`;
-    document.getElementById('verdict-text').innerHTML = verdict;
+    document.getElementById('verdict-text').innerHTML = `
+      ${hostName} & ${guestName} — you two are going to be a great couple together! 💍<br><br>
+      You will have great chemistry together 💕<br>
+      Great maturity in life 🌱<br>
+      Most importantly — a great, healthy sex life! 🔥<br><br>
+      Which is rare for 94% of the world! 💯<br><br>
+      Remember to have at least twice a week 😉<br>
+      And always use protection! 🛡️<br><br>
+      Love, AI 💜
+    `;
     showScreen('end-screen');
   });
 
