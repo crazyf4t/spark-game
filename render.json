@@ -1,0 +1,13 @@
+{
+  "name": "spark-server",
+  "region": "oregon",
+  "repo": "YOUR_GITHUB_REPO_URL",
+  "buildCommand": "npm install",
+  "startCommand": "npm start",
+  "envVars": [
+    {
+      "key": "NODE_ENV",
+      "value": "production"
+    }
+  ]
+}

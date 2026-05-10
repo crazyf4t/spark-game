@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPARK — A Question Game for Two</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="screen active">
+      <h1 class="logo">⚡ SPARK</h1>
+      <p class="tagline">A question game for two</p>
+      
+      <div class="card">
+        <input type="text" id="name-input" placeholder="Your name" maxlength="20">
+        
+        <div class="buttons">
+          <button onclick="createRoom()" class="btn primary">Create Room</button>
+          <div class="divider">or</div>
+          <input type="text" id="code-input" placeholder="Room code" maxlength="4">
+          <button onclick="joinRoom()" class="btn secondary">Join Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="screen">
+      <h2 class="room-code" id="display-code">----</h2>
+      <p class="waiting">Waiting for your partner...</p>
+      <div class="code-share">
+        <p>Share this code with your partner:</p>
+        <div class="code-display" id="share-code">----</div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+      <div class="round-indicator" id="round-indicator">
+        <span class="round-name">Warm-Up</span>
+        <span class="question-num">1/20</span>
+      </div>
+      
+      <div class="question-card">
+        <p id="question-text">Tap "Roll Question" to begin!</p>
+      </div>
+      
+      <div class="action-area" id="action-area">
+        <button onclick="rollQuestion()" class="btn primary big" id="roll-btn">Roll Question</button>
+        <button onclick="nextTurn()" class="btn secondary hidden" id="next-btn">Next Turn →</button>
+      </div>
+      
+      <div class="players">
+        <div class="player host" id="host-player">
+          <span class="pulse">●</span> <span id="host-name">Host</span>
+        </div>
+        <div class="player guest" id="guest-player">
+          <span class="waiting">○</span> <span id="guest-name">Guest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="end-screen" class="screen">
+      <h2>🎉 That's a Wrap! 🎉</h2>
+      <p>You made it through all 20 questions!</p>
+      <button onclick="restartGame()" class="btn primary">Play Again</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

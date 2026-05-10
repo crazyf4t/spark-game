@@ -1,0 +1,11 @@
+{
+  "name": "spark-game",
+  "version": "1.0.0",
+  "build": {
+    "command": "npm install",
+    "timeout": 120
+  },
+  "start": {
+    "command": "npm start"
+  }
+}
