@@ -36,12 +36,27 @@ function handleSocketEvents(io, socket) {
     socket.emit('joined', { room, role });
   });
 
-  // Player rolls a question
+  // Player rolls — advances question AND switches turn
   socket.on('roll', async () => {
     const { code } = socket.data;
     const room = getRoom(code);
     if (!room) return;
 
+    // Advance to next question
+    room.currentQuestion += 1;
+
+    // Check if game over
+    if (room.currentQuestion >= ALL_QUESTIONS.length) {
+      saveRoom(code, room);
+      io.to(code).emit('game_over', { winner: room.turn });
+      return;
+    }
+
+    // Switch turn to the other player
+    room.turn = room.turn === 'host' ? 'guest' : 'host';
+    saveRoom(code, room);
+
+    // Emit question to BOTH players
     const question = ALL_QUESTIONS[room.currentQuestion];
     io.to(code).emit('question_rolled', {
       question: question.text,
@@ -50,25 +65,8 @@ function handleSocketEvents(io, socket) {
       index: room.currentQuestion,
       total: ALL_QUESTIONS.length
     });
-  });
 
-  // Player passes turn
-  socket.on('next_turn', async () => {
-    const { code } = socket.data;
-    const room = getRoom(code);
-    if (!room) return;
-
-    room.currentQuestion += 1;
-
-    if (room.currentQuestion >= ALL_QUESTIONS.length) {
-      saveRoom(code, room);
-      io.to(code).emit('game_over', { winner: room.turn });
-      return;
-    }
-
-    room.turn = room.turn === 'host' ? 'guest' : 'host';
-    saveRoom(code, room);
-
+    // Tell both players whose turn it now is
     io.to(code).emit('turn_changed', {
       turn: room.turn,
       nextQuestion: room.currentQuestion

@@ -53,12 +53,24 @@ const ROUNDS = [
   }
 ];
 
+// Build ALL_QUESTIONS and shuffle per-round
+function shuffleArray(arr) {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Shuffle questions within each round at build time
 const ALL_QUESTIONS = [];
 ROUNDS.forEach((r, roundIndex) => {
-  r.questions.forEach((text, qIndex) => {
-    ALL_QUESTIONS.push({ 
-      text, 
-      round: r.name, 
+  const shuffledQuestions = shuffleArray(r.questions);
+  shuffledQuestions.forEach((text, qIndex) => {
+    ALL_QUESTIONS.push({
+      text,
+      round: r.name,
       roundKey: r.key,
       roundIndex: roundIndex,
       questionIndex: qIndex
