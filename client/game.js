@@ -1,5 +1,4 @@
 // SPARK - Client Game Logic
-// Uses Socket.io client CDN
 
 const SERVER_URL = 'https://spark-game.onrender.com';
 
@@ -7,8 +6,9 @@ let socket;
 let myRole = '';
 let myName = '';
 let roomCode = '';
-let currentQuestion = 0;
 let myTurn = false;
+let autoRollTimer = null;
+let isRolling = false;
 
 // ── Create Room ─────────────────────────────────────
 async function createRoom() {
@@ -65,44 +65,37 @@ function connectSocket() {
     myRole = role;
     document.getElementById('host-name').textContent = room.host;
     if (room.guest) document.getElementById('guest-name').textContent = room.guest;
-    startGame();
+    // Only start game if BOTH players are present
+    if (room.host && room.guest) {
+      startGame();
+    } else {
+      showLobby(roomCode);
+    }
   });
 
   socket.on('player_joined', ({ name }) => {
     document.getElementById('guest-name').textContent = name;
     showToast(`${name} joined!`);
+    // Guest joined — both now in room, start game!
+    startGame();
   });
 
   socket.on('question_rolled', (data) => {
-    currentQuestion = data.index;
-    document.getElementById('question-text').textContent = data.question;
-    document.getElementById('round-indicator').innerHTML = `
-      <span class="round-name">${data.round}</span>
-    `;
-    document.getElementById('roll-btn').classList.add('hidden');
-    document.getElementById('next-btn').classList.remove('hidden');
+    // Stop auto roll timer
+    if (autoRollTimer) clearTimeout(autoRollTimer);
+    isRolling = true;
+
+    // Slot machine animation
+    animateRoll(data);
   });
 
-  socket.on('turn_changed', ({ turn, nextQuestion }) => {
+  socket.on('turn_changed', ({ turn }) => {
     myTurn = (turn === myRole);
     updatePlayers();
-    // Reset for next player — clear question, show roll button
-    if (myTurn) {
-      document.getElementById('question-text').textContent = 'Your turn! Tap "Roll Question" to continue.';
-      document.getElementById('roll-btn').classList.remove('hidden');
-      document.getElementById('next-btn').classList.add('hidden');
-      document.getElementById('roll-btn').disabled = false;
-      document.getElementById('roll-btn').style.opacity = 1;
-    } else {
-      document.getElementById('question-text').textContent = "Waiting for partner's question...";
-      document.getElementById('roll-btn').classList.add('hidden');
-      document.getElementById('next-btn').classList.add('hidden');
-      document.getElementById('roll-btn').disabled = true;
-      document.getElementById('roll-btn').style.opacity = 0.5;
-    }
   });
 
   socket.on('game_over', () => {
+    if (autoRollTimer) clearTimeout(autoRollTimer);
     showScreen('end-screen');
   });
 
@@ -116,21 +109,62 @@ function connectSocket() {
   });
 }
 
+// ── Slot Machine Animation ─────────────────────
+function animateRoll(data) {
+  const questionText = document.getElementById('question-text');
+  const rollBtn = document.getElementById('roll-btn');
+  const roundIndicator = document.getElementById('round-indicator');
+  
+  // Hide roll button during animation
+  rollBtn.classList.add('hidden');
+  
+  // Slot machine spinning words
+  const slotWords = [
+    "🎲", "⚡", "🔥", "💫", "✨", "💥", "🎯",
+    "Whoops...", "Oops!", "Ah!", "Hmm...", "Yikes!",
+    "Wait for it...", "Almost...", "Here we go...",
+    data.question // final answer
+  ];
+  
+  let spinCount = 0;
+  const maxSpins = 20;
+  
+  const spinInterval = setInterval(() => {
+    const randomWord = slotWords[Math.floor(Math.random() * (slotWords.length - 1))];
+    questionText.textContent = randomWord;
+    spinCount++;
+    
+    // Slow down near the end
+    if (spinCount > maxSpins - 5) {
+      clearInterval(spinInterval);
+      // Show actual question
+      questionText.textContent = data.question;
+      roundIndicator.innerHTML = `<span class="round-name">${data.round}</span>`;
+      isRolling = false;
+      
+      // Schedule auto "Roll Next Question" after 10 seconds
+      autoRollTimer = setTimeout(() => {
+        rollBtn.textContent = 'Roll Next Question →';
+        rollBtn.classList.remove('hidden');
+      }, 10000);
+    }
+  }, 80);
+}
+
 // ── Game Actions ────────────────────────────────
 function rollQuestion() {
+  if (isRolling) return;
   socket.emit('roll');
 }
 
-function nextTurn() {
-  socket.emit('next_turn');
-}
-
 function restartGame() {
+  if (autoRollTimer) clearTimeout(autoRollTimer);
   location.reload();
 }
 
 function goBack() {
   if (socket) socket.disconnect();
+  if (autoRollTimer) clearTimeout(autoRollTimer);
   location.reload();
 }
 
@@ -160,8 +194,15 @@ function updatePlayers() {
   guestEl.classList.toggle('active', myRole === 'guest' && myTurn);
   
   const rollBtn = document.getElementById('roll-btn');
-  rollBtn.disabled = !myTurn;
-  rollBtn.style.opacity = myTurn ? 1 : 0.5;
+  
+  if (!myTurn) {
+    rollBtn.textContent = 'Roll Question';
+    rollBtn.disabled = true;
+    rollBtn.style.opacity = 0.5;
+  } else {
+    rollBtn.disabled = false;
+    rollBtn.style.opacity = 1;
+  }
 }
 
 function showToast(message) {
