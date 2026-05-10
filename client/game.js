@@ -93,6 +93,11 @@ function connectSocket() {
 
   socket.on('game_over', () => {
     if (autoRollTimer) clearTimeout(autoRollTimer);
+    // Build verdict with player names
+    const hostName = document.getElementById('host-name').textContent || 'You';
+    const guestName = document.getElementById('guest-name').textContent || 'Partner';
+    const verdict = `${hostName} & ${guestName} — You two are going to be a great couple together! 💍`;
+    document.getElementById('verdict-text').innerHTML = verdict;
     showScreen('end-screen');
   });
 

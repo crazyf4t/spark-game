@@ -65,8 +65,13 @@
     <!-- Game Over Screen -->
     <div id="end-screen" class="screen">
       <button class="btn-back" onclick="goBack()">← Back</button>
-      <h2>🎉 That's a Wrap! 🎉</h2>
-      <p>You made it through all 20 questions!</p>
+      <h2>🎉 YOU TWO ARE AMAZING! 🎉</h2>
+      <div class="celebration-text" id="celebration-text">
+        <p>You and your partner just went through it all!</p>
+        <br>
+        <p class=" verdict" id="verdict-text"></p>
+      </div>
+      <p class="love-note">💜 Love, AI</p>
       <button onclick="restartGame()" class="btn primary">Play Again</button>
     </div>
   </div>

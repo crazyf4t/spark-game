@@ -261,7 +261,30 @@ input::placeholder {
 
 /* End Screen */
 #end-screen h2 {
-  font-size: 32px;
+  font-size: 28px;
+}
+
+.verdict {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #ffccdd;
+}
+
+.love-note {
+  color: var(--primary);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.celebration-text p {
+  color: #ccc;
+  font-size: 15px;
+}
+
+.celebration-text .verdict {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff80ab;
 }
 
 #end-screen p {
